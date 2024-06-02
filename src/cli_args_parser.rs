@@ -10,10 +10,43 @@ pub struct UserOptions {
     sort_by_time: bool,
     long_listing: bool,
     recursive_exec: bool,
+    display_as_separate_entries: bool,
     requested_items: Vec<String>,
 }
 
 impl UserOptions {
+    pub fn requested_items(&self) -> &Vec<String> {
+        &self.requested_items
+    }
+
+    pub fn should_list_hidden(&self) -> bool {
+        self.list_hidden
+    }
+
+    /*pub fn should_list_dirs(&self) -> bool {
+        self.list_dirs
+    }
+
+    pub fn should_sort_reverse_order(&self) -> bool {
+        self.sort_reverse_order
+    }
+
+    pub fn should_sort_by_time(&self) -> bool {
+        self.sort_by_time
+    }
+
+    pub fn should_do_long_listing(&self) -> bool {
+        self.long_listing
+    }
+
+    pub fn should_do_recursive_exec(&self) -> bool {
+        self.recursive_exec
+    }
+
+    pub fn should_display_as_seperate_entries(&self) -> bool {
+        self.display_as_separate_entries
+    }*/
+
     fn add_req_item(&mut self, fs_item: String) {
         if self.requested_items.starts_with(&[".".to_string()]) && self.requested_items.len() == 1 {
             self.requested_items.clear();
@@ -31,6 +64,7 @@ pub fn parse_arguments() -> Result<UserOptions, String> {
         sort_by_time: false,
         long_listing: false,
         recursive_exec: false,
+        display_as_separate_entries: false,
         requested_items: vec![".".to_string()],
     };
 
@@ -40,6 +74,11 @@ pub fn parse_arguments() -> Result<UserOptions, String> {
         } else {
             user_options.add_req_item(arg);
         }
+    }
+
+    // if user requests listing of multiple fs entries
+    if user_options.requested_items.len() > 1 {
+        user_options.display_as_separate_entries = true;
     }
     Ok(user_options)
 }
@@ -73,6 +112,7 @@ mod tests {
             sort_by_time: false,
             long_listing: false,
             recursive_exec: false,
+            display_as_separate_entries: false,
             requested_items: vec![".".to_string()],
         };
 
@@ -83,6 +123,7 @@ mod tests {
             sort_by_time: true,
             long_listing: true,
             recursive_exec: true,
+            display_as_separate_entries: false,
             requested_items: vec![".".to_string()],
         };
 
@@ -100,6 +141,7 @@ mod tests {
             sort_by_time: false,
             long_listing: false,
             recursive_exec: false,
+            display_as_separate_entries: false,
             requested_items: vec![".".to_string()],
         };
 
@@ -110,6 +152,7 @@ mod tests {
             sort_by_time: false,
             long_listing: false,
             recursive_exec: false,
+            display_as_separate_entries: false,
             requested_items: vec![".".to_string()],
         };
 
@@ -127,6 +170,7 @@ mod tests {
             sort_by_time: false,
             long_listing: false,
             recursive_exec: false,
+            display_as_separate_entries: false,
             requested_items: vec![".".to_string()],
         };
 
