@@ -2,6 +2,7 @@ use std::env;
 use crate::error_messages::get_error_message;
 
 #[derive(Debug)]
+#[derive(PartialEq)]
 pub struct UserOptions {
     list_hidden: bool,
     list_dirs: bool,
@@ -56,4 +57,79 @@ fn parse_flags(arg: String, user_options: &mut UserOptions) -> Result<(), String
         }
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parse_flags_test_all() {
+        let arg = "-adrtlR".to_string();
+        let mut user_options = UserOptions {
+            list_hidden: false,
+            list_dirs: false,
+            sort_reverse_order: false,
+            sort_by_time: false,
+            long_listing: false,
+            recursive_exec: false,
+            requested_items: vec![".".to_string()],
+        };
+
+        let expected_user_options = UserOptions {
+            list_hidden: true,
+            list_dirs: true,
+            sort_reverse_order: true,
+            sort_by_time: true,
+            long_listing: true,
+            recursive_exec: true,
+            requested_items: vec![".".to_string()],
+        };
+
+        parse_flags(arg, &mut user_options).unwrap();
+        assert_eq!(user_options, expected_user_options);
+    }
+
+    #[test]
+    fn parse_flags_test_empty() {
+        let arg = "-".to_string();
+        let mut user_options = UserOptions {
+            list_hidden: false,
+            list_dirs: false,
+            sort_reverse_order: false,
+            sort_by_time: false,
+            long_listing: false,
+            recursive_exec: false,
+            requested_items: vec![".".to_string()],
+        };
+
+        let expected_user_options = UserOptions {
+            list_hidden: false,
+            list_dirs: false,
+            sort_reverse_order: false,
+            sort_by_time: false,
+            long_listing: false,
+            recursive_exec: false,
+            requested_items: vec![".".to_string()],
+        };
+
+        parse_flags(arg, &mut user_options).unwrap();
+        assert_eq!(user_options, expected_user_options);
+    }
+
+    #[test]
+    fn parse_flags_test_unknown_flag() {
+        let arg = "-V".to_string();
+        let mut user_options = UserOptions {
+            list_hidden: false,
+            list_dirs: false,
+            sort_reverse_order: false,
+            sort_by_time: false,
+            long_listing: false,
+            recursive_exec: false,
+            requested_items: vec![".".to_string()],
+        };
+
+        assert!(parse_flags(arg, &mut user_options).is_err());
+    }
 }

@@ -14,6 +14,7 @@ fn main() {
         }
     };
     println!("DEBUG: {:#?}", user_options);
+
     // list FS items for each
 
     //exit with right code
