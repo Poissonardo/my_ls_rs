@@ -23,11 +23,11 @@ impl UserOptions {
         self.list_hidden
     }
 
-    /*pub fn should_list_dirs(&self) -> bool {
+    pub fn should_list_dirs(&self) -> bool {
         self.list_dirs
     }
 
-    pub fn should_sort_reverse_order(&self) -> bool {
+    /*pub fn should_sort_reverse_order(&self) -> bool {
         self.sort_reverse_order
     }
 
@@ -43,7 +43,7 @@ impl UserOptions {
         self.recursive_exec
     }
 
-    pub fn should_display_as_seperate_entries(&self) -> bool {
+    pub fn should_display_as_separate_entries(&self) -> bool {
         self.display_as_separate_entries
     }*/
 
