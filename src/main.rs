@@ -1,7 +1,7 @@
 use crate::cli_args_parser::parse_arguments;
-use std::process::exit;
 use crate::error_messages::get_error_message;
 use crate::list_fs_items::{get_filtered_user_items, list_dir_content};
+use std::process::exit;
 
 mod cli_args_parser;
 mod error_messages;

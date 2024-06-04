@@ -1,7 +1,9 @@
-use std::fs::read_dir;
-use std::path::{Path, PathBuf};
+use std::cmp::Ordering;
 use crate::cli_args_parser::UserOptions;
 use crate::error_messages::get_error_message_without_help_indication;
+use std::fs::read_dir;
+use std::path::{Path, PathBuf};
+use std::time::SystemTime;
 
 pub struct UserItemEntry {
     path: PathBuf,
@@ -35,9 +37,16 @@ pub fn get_filtered_user_items(user_options: &UserOptions) -> (Vec<UserItemEntry
 
 pub fn list_dir_content(entry: UserItemEntry, user_options: &UserOptions) -> Result<(), String> {
     //get fs items
-    let filtered_dir_entries = get_items_list(entry, user_options)?;
+    let mut filtered_dir_entries = get_items_list(entry, user_options)?;
 
     //sort fs items
+    if user_options.should_sort_by_time() {
+        sort_dir_entries_by_time(&mut filtered_dir_entries)?;
+    } else {
+        //todo sort alphabetically
+    }
+
+    //todo reverse sort order if needed
 
     //display fs items
 
@@ -51,6 +60,28 @@ pub fn list_dir_content(entry: UserItemEntry, user_options: &UserOptions) -> Res
             println!("{}", item.to_str().unwrap());
         }
     }
+    Ok(())
+}
+
+fn sort_dir_entries_by_time(dir_entries: &mut Vec<PathBuf>) -> Result<(), String>{
+    dir_entries.sort_by(|a, b| {
+        match (a.metadata(), b.metadata()) {
+
+            (Ok(a_data), Ok(b_data)) => {
+                let a_modif_date = a_data.modified().unwrap_or(SystemTime::UNIX_EPOCH);
+                let b_modif_date = b_data.modified().unwrap_or(SystemTime::UNIX_EPOCH);
+
+                match b_modif_date.cmp(&a_modif_date) {
+                    Ordering::Equal => { //sorts alphabetically if two entities have been modified at the same time
+                        let (a_str, b_str) = (a.to_str().unwrap_or(""), b.to_str().unwrap_or(""));
+                        a_str.cmp(b_str)
+                    },
+                    order => order
+                }
+            },
+            _ => std::cmp::Ordering::Equal
+        }
+    });
     Ok(())
 }
 

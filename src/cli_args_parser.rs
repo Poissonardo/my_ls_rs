@@ -1,5 +1,5 @@
-use std::env;
 use crate::error_messages::get_error_message;
+use std::env;
 
 #[derive(Debug)]
 #[derive(PartialEq)]
@@ -27,25 +27,9 @@ impl UserOptions {
         self.list_dirs
     }
 
-    /*pub fn should_sort_reverse_order(&self) -> bool {
-        self.sort_reverse_order
-    }
-
     pub fn should_sort_by_time(&self) -> bool {
         self.sort_by_time
     }
-
-    pub fn should_do_long_listing(&self) -> bool {
-        self.long_listing
-    }
-
-    pub fn should_do_recursive_exec(&self) -> bool {
-        self.recursive_exec
-    }
-
-    pub fn should_display_as_separate_entries(&self) -> bool {
-        self.display_as_separate_entries
-    }*/
 
     fn add_req_item(&mut self, fs_item: String) {
         if self.requested_items.starts_with(&[".".to_string()]) && self.requested_items.len() == 1 {
