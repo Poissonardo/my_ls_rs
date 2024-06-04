@@ -31,6 +31,10 @@ impl UserOptions {
         self.sort_by_time
     }
 
+    pub fn should_sort_in_reverse_order(&self) -> bool {
+        self.sort_reverse_order
+    }
+
     fn add_req_item(&mut self, fs_item: String) {
         if self.requested_items.starts_with(&[".".to_string()]) && self.requested_items.len() == 1 {
             self.requested_items.clear();

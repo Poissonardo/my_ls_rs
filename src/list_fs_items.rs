@@ -47,7 +47,9 @@ pub fn list_dir_content(entry: UserItemEntry, user_options: &UserOptions) -> Res
         sort_dir_entries_alphabetically(&mut filtered_dir_entries)?;
     }
 
-    //todo reverse sort order if needed
+    if user_options.should_sort_in_reverse_order() {
+        filtered_dir_entries.reverse();
+    }
 
     //display fs items
 
