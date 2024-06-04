@@ -1,4 +1,5 @@
 use std::cmp::Ordering;
+use std::ffi::OsStr;
 use crate::cli_args_parser::UserOptions;
 use crate::error_messages::get_error_message_without_help_indication;
 use std::fs::read_dir;
@@ -43,7 +44,7 @@ pub fn list_dir_content(entry: UserItemEntry, user_options: &UserOptions) -> Res
     if user_options.should_sort_by_time() {
         sort_dir_entries_by_time(&mut filtered_dir_entries)?;
     } else {
-        //todo sort alphabetically
+        sort_dir_entries_alphabetically(&mut filtered_dir_entries)?;
     }
 
     //todo reverse sort order if needed
@@ -72,17 +73,29 @@ fn sort_dir_entries_by_time(dir_entries: &mut Vec<PathBuf>) -> Result<(), String
                 let b_modif_date = b_data.modified().unwrap_or(SystemTime::UNIX_EPOCH);
 
                 match b_modif_date.cmp(&a_modif_date) {
-                    Ordering::Equal => { //sorts alphabetically if two entities have been modified at the same time
-                        let (a_str, b_str) = (a.to_str().unwrap_or(""), b.to_str().unwrap_or(""));
-                        a_str.cmp(b_str)
+                    Ordering::Equal => {
+                        compare_path_buf_alphabetically(a, b) //sorts alphabetically if two entities have been modified at the same time
                     },
                     order => order
                 }
             },
-            _ => std::cmp::Ordering::Equal
+            _ => Ordering::Equal
         }
     });
     Ok(())
+}
+
+fn sort_dir_entries_alphabetically(dir_entries: &mut Vec<PathBuf>) -> Result<(), String>{
+    dir_entries.sort_by(|a, b| {
+        compare_path_buf_alphabetically(a, b)
+    });
+    Ok(())
+}
+
+fn compare_path_buf_alphabetically(a: &PathBuf, b: &PathBuf) -> Ordering {
+    let a_str = a.file_name().unwrap_or(OsStr::new("")).to_str().unwrap_or("").trim_start_matches('.');
+    let b_str = b.file_name().unwrap_or(OsStr::new("")).to_str().unwrap_or("").trim_start_matches('.');
+    a_str.cmp(b_str)
 }
 
 fn get_items_list(entry: UserItemEntry, user_options: &UserOptions) -> Result<Vec<PathBuf>, String> {
