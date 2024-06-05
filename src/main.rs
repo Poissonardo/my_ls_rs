@@ -6,6 +6,7 @@ use std::process::exit;
 mod cli_args_parser;
 mod error_messages;
 mod list_fs_items;
+mod display_fs_items;
 
 fn main() {
     // parse CLI arguments

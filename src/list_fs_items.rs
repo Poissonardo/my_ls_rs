@@ -2,6 +2,7 @@ use std::cmp::Ordering;
 use std::ffi::OsStr;
 use crate::cli_args_parser::UserOptions;
 use crate::error_messages::get_error_message_without_help_indication;
+use crate::display_fs_items::display_fs_items;
 use std::fs::read_dir;
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;
@@ -13,7 +14,11 @@ pub struct UserItemEntry {
 
 impl UserItemEntry {
     pub fn new(entry: String, path: PathBuf) -> UserItemEntry {
-        UserItemEntry {path, entry}
+        UserItemEntry { path, entry }
+    }
+
+    pub fn entry(&self) -> &String {
+        &self.entry
     }
 }
 
@@ -38,7 +43,7 @@ pub fn get_filtered_user_items(user_options: &UserOptions) -> (Vec<UserItemEntry
 
 pub fn list_dir_content(entry: UserItemEntry, user_options: &UserOptions) -> Result<(), String> {
     //get fs items
-    let mut filtered_dir_entries = get_items_list(entry, user_options)?;
+    let mut filtered_dir_entries = get_items_list(&entry, user_options)?;
 
     //sort fs items
     if user_options.should_sort_by_time() {
@@ -52,24 +57,13 @@ pub fn list_dir_content(entry: UserItemEntry, user_options: &UserOptions) -> Res
     }
 
     //display fs items
-
-    // debug
-    for item in filtered_dir_entries {
-        if let Some(item_name) = item.file_name() {
-            if let Some(item_name) = item_name.to_str() {
-                println!("{}", item_name)
-            }
-        } else {
-            println!("{}", item.to_str().unwrap());
-        }
-    }
+    display_fs_items(&filtered_dir_entries, user_options, &entry)?;
     Ok(())
 }
 
-fn sort_dir_entries_by_time(dir_entries: &mut Vec<PathBuf>) -> Result<(), String>{
+fn sort_dir_entries_by_time(dir_entries: &mut Vec<PathBuf>) -> Result<(), String> {
     dir_entries.sort_by(|a, b| {
         match (a.metadata(), b.metadata()) {
-
             (Ok(a_data), Ok(b_data)) => {
                 let a_modif_date = a_data.modified().unwrap_or(SystemTime::UNIX_EPOCH);
                 let b_modif_date = b_data.modified().unwrap_or(SystemTime::UNIX_EPOCH);
@@ -77,17 +71,17 @@ fn sort_dir_entries_by_time(dir_entries: &mut Vec<PathBuf>) -> Result<(), String
                 match b_modif_date.cmp(&a_modif_date) {
                     Ordering::Equal => {
                         compare_path_buf_alphabetically(a, b) //sorts alphabetically if two entities have been modified at the same time
-                    },
+                    }
                     order => order
                 }
-            },
+            }
             _ => Ordering::Equal
         }
     });
     Ok(())
 }
 
-fn sort_dir_entries_alphabetically(dir_entries: &mut Vec<PathBuf>) -> Result<(), String>{
+fn sort_dir_entries_alphabetically(dir_entries: &mut Vec<PathBuf>) -> Result<(), String> {
     dir_entries.sort_by(|a, b| {
         compare_path_buf_alphabetically(a, b)
     });
@@ -100,7 +94,7 @@ fn compare_path_buf_alphabetically(a: &PathBuf, b: &PathBuf) -> Ordering {
     a_str.cmp(b_str)
 }
 
-fn get_items_list(entry: UserItemEntry, user_options: &UserOptions) -> Result<Vec<PathBuf>, String> {
+fn get_items_list(entry: &UserItemEntry, user_options: &UserOptions) -> Result<Vec<PathBuf>, String> {
     let fs_items = match read_dir(&entry.path) {
         Ok(fs_items) => fs_items,
         Err(error) => return Err(format!("cannot access '{}': {}", entry.entry, error.to_string()))

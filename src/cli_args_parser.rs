@@ -31,6 +31,14 @@ impl UserOptions {
         self.sort_by_time
     }
 
+    pub fn should_display_as_separate_entries(&self) -> bool {
+        self.display_as_separate_entries
+    }
+
+    pub fn should_display_long_listing(&self) -> bool {
+        self.long_listing
+    }
+
     pub fn should_sort_in_reverse_order(&self) -> bool {
         self.sort_reverse_order
     }
