@@ -11,28 +11,33 @@ pub fn display_fs_items(dir_entries: &Vec<PathBuf>, user_options: &UserOptions, 
     if user_options.should_display_long_listing() {
         todo!()
     } else {
-        display_dir_entries_normal(dir_entries)?;
+        display_fs_item_vec_normal(dir_entries)?;
     }
     Ok(())
 }
 
-fn display_dir_entries_normal(dir_entries: &Vec<PathBuf>) -> Result<(), String>{
+fn display_fs_item_vec_normal(dir_entries: &Vec<PathBuf>) -> Result<(), String> {
     for (i, item) in dir_entries.iter().enumerate() {
-        let output_string = match item.file_name() {
-            Some(result) => result.to_str().unwrap_or(""),
-            None => return Err("cannot display some items, error while pulling item name.".to_string())
-        };
-
-        if item.is_dir() {
-            print!("{}/", output_string.blue());
-        } else {
-            print!("{}", output_string)
-        }
-
+        display_fs_item_normal(item)?;
         if i != dir_entries.len() - 1 {
             print!("  ");
         }
     }
     println!();
+    Ok(())
+}
+
+pub fn display_fs_item_normal(fs_item: &PathBuf) -> Result<(), String>{
+
+    let output_string = match fs_item.file_name() {
+        Some(result) => result.to_str().unwrap_or(""),
+        None => return Err("cannot display some items, error while pulling item name.".to_string())
+    };
+
+    if fs_item.is_dir() {
+        print!("{}/", output_string.blue().bold());
+    } else {
+        print!("{}", output_string)
+    }
     Ok(())
 }

@@ -87,7 +87,10 @@ fn parse_flags(arg: String, user_options: &mut UserOptions) -> Result<(), String
             'r' => user_options.sort_reverse_order = true,
             't' => user_options.sort_by_time = true,
             'l' => user_options.long_listing = true,
-            'R' => user_options.recursive_exec = true,
+            'R' => {
+                user_options.recursive_exec = true;
+                user_options.display_as_separate_entries = true;
+            },
             _ => return Err(get_error_message(format!("invalid option -- '{}'", character)))
         }
     }

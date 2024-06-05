@@ -20,6 +20,10 @@ impl UserItemEntry {
     pub fn entry(&self) -> &String {
         &self.entry
     }
+
+    pub fn path(&self) -> &PathBuf {
+        &self.path
+    }
 }
 
 //filters items requested by user
@@ -41,7 +45,7 @@ pub fn get_filtered_user_items(user_options: &UserOptions) -> (Vec<UserItemEntry
     (containing_items, non_containing_items)
 }
 
-pub fn list_dir_content(entry: UserItemEntry, user_options: &UserOptions) -> Result<(), String> {
+pub fn list_dir_content(entry: &UserItemEntry, user_options: &UserOptions) -> Result<(), String> {
     //get fs items
     let mut filtered_dir_entries = get_items_list(&entry, user_options)?;
 
