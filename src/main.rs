@@ -35,6 +35,7 @@ fn main() {
     if !non_containing_items.is_empty() {
         println!()
     }
+
     //display content of containing fs items
     for (i, entry) in containing_items.iter().enumerate() {
         if let Err(error) = list_dir_content(entry, &user_options) {

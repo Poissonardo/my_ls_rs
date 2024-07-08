@@ -38,6 +38,8 @@ pub fn get_filtered_user_items(user_options: &UserOptions) -> (Vec<UserItemEntry
             containing_items.push(UserItemEntry::new(entry.to_string(), path));
         } else if path.exists() {
             non_containing_items.push(UserItemEntry::new(entry.to_string(), path));
+        } else if entry.to_string() == "." || entry.to_string() == ".." {
+            continue;
         } else {
             eprintln!("{}", get_error_message_without_help_indication(format!("cannot access '{}': No such file or directory", entry)));
         }
@@ -121,9 +123,9 @@ fn get_items_list(entry: &UserItemEntry, user_options: &UserOptions) -> Result<V
             }
         }
     }
-    if user_options.should_list_hidden() {
+    /*if user_options.should_list_hidden() {
         filtered_fs_items.push(Path::new(".").to_path_buf());
         filtered_fs_items.push(Path::new("..").to_path_buf());
-    }
+    }*/
     Ok(filtered_fs_items)
 }
